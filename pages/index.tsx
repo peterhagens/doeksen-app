@@ -9,7 +9,7 @@ const isSameOrAfter = (d1: Date, d2: Date) => {
   return date1 >= date2;
 };
 
-// Simple boot SVG icon als React component
+// Boot icon zoals eerder
 const BootIcon = () => (
   <svg
     width="40"
@@ -38,9 +38,13 @@ export default function Home() {
   const [departures, setDepartures] = useState<any[]>([]);
   const [message, setMessage] = useState('');
 
-  const fetchDepartures = async (date: Date) => {
+  // Hier toggle tussen routes
+  const [route, setRoute] = useState<'H-T' | 'T-H'>('H-T');
+
+  const fetchDepartures = async (date: Date, route: 'H-T' | 'T-H') => {
     const isoDate = date.toISOString().split('T')[0];
-    const res = await fetch(`/api/departures?date=${isoDate}`);
+    const [from, to] = route.split('-');
+    const res = await fetch(`/api/departures?date=${isoDate}&from=${from}&to=${to}`);
     const json = await res.json();
 
     if (json.message) {
@@ -53,8 +57,8 @@ export default function Home() {
   };
 
   useEffect(() => {
-    fetchDepartures(date);
-  }, [date]);
+    fetchDepartures(date, route);
+  }, [date, route]);
 
   const prevDay = () => {
     const prev = new Date(date);
@@ -77,14 +81,71 @@ export default function Home() {
     }
   };
 
-  return (
-    <main style={{ padding: 24, fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif", backgroundColor: '#f4f7fa', minHeight: '100vh' }}>
-      <h1 style={{ textAlign: 'center', color: '#333', marginBottom: 24 }}>Rederijk Doeksen dienstregeling</h1>
+  // Toggle functie route omdraaien
+  const toggleRoute = () => {
+    setRoute((prev) => (prev === 'H-T' ? 'T-H' : 'H-T'));
+  };
 
-      <section style={{ display: 'flex', justifyContent: 'center', gap: 12, marginBottom: 24, flexWrap: 'wrap' }}>
+  return (
+    <main
+      style={{
+        padding: 24,
+        fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
+        backgroundColor: '#f4f7fa',
+        minHeight: '100vh',
+      }}
+    >
+      <h1 style={{ textAlign: 'center', color: '#333', marginBottom: 24 }}>
+        Rederijk Doeksen dienstregeling
+      </h1>
+
+      {/* Route toggle */}
+      <section
+        style={{
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          gap: 16,
+          marginBottom: 24,
+          flexWrap: 'wrap',
+        }}
+      >
+        <span style={{ fontSize: 16, color: '#555' }}>
+          Route: <strong>{route === 'H-T' ? 'Harlingen → Terschelling' : 'Terschelling → Harlingen'}</strong>
+        </span>
+        <button
+          onClick={toggleRoute}
+          style={{
+            padding: '8px 16px',
+            fontSize: 16,
+            backgroundColor: '#4A90E2',
+            color: 'white',
+            border: 'none',
+            borderRadius: 6,
+            cursor: 'pointer',
+            userSelect: 'none',
+          }}
+          aria-label="Toggle route"
+        >
+          Wissel route
+        </button>
+      </section>
+
+      {/* Datum selectie en knoppen */}
+      <section
+        style={{
+          display: 'flex',
+          justifyContent: 'center',
+          gap: 12,
+          marginBottom: 24,
+          flexWrap: 'wrap',
+        }}
+      >
         <button
           onClick={prevDay}
-          disabled={!isSameOrAfter(new Date(date.getFullYear(), date.getMonth(), date.getDate() - 1), today)}
+          disabled={
+            !isSameOrAfter(new Date(date.getFullYear(), date.getMonth(), date.getDate() - 1), today)
+          }
           style={{
             padding: '10px 16px',
             fontSize: 16,
@@ -93,7 +154,9 @@ export default function Home() {
             border: 'none',
             borderRadius: 6,
             cursor: 'pointer',
-            opacity: !isSameOrAfter(new Date(date.getFullYear(), date.getMonth(), date.getDate() - 1), today) ? 0.4 : 1,
+            opacity: !isSameOrAfter(new Date(date.getFullYear(), date.getMonth(), date.getDate() - 1), today)
+              ? 0.4
+              : 1,
           }}
         >
           &lt; Vorige dag
@@ -131,14 +194,21 @@ export default function Home() {
       </section>
 
       <p style={{ textAlign: 'center', marginBottom: 32, fontSize: 18, color: '#555' }}>
-        <strong>{dagNaam(date)}</strong> — {date.toLocaleDateString('nl-NL', { year: 'numeric', month: 'long', day: 'numeric' })}
+        <strong>{dagNaam(date)}</strong> —{' '}
+        {date.toLocaleDateString('nl-NL', { year: 'numeric', month: 'long', day: 'numeric' })}
       </p>
 
       {message && (
         <p style={{ textAlign: 'center', color: '#c0392b', fontWeight: 'bold', fontSize: 18 }}>{message}</p>
       )}
 
-      <section style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(280px,1fr))', gap: 24 }}>
+      <section
+        style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fill,minmax(280px,1fr))',
+          gap: 24,
+        }}
+      >
         {departures.map((dep) => (
           <article
             key={dep.code}
@@ -152,8 +222,8 @@ export default function Home() {
               transition: 'transform 0.2s',
               cursor: 'default',
             }}
-            onMouseEnter={e => (e.currentTarget.style.transform = 'scale(1.03)')}
-            onMouseLeave={e => (e.currentTarget.style.transform = 'scale(1)')}
+            onMouseEnter={(e) => (e.currentTarget.style.transform = 'scale(1.03)')}
+            onMouseLeave={(e) => (e.currentTarget.style.transform = 'scale(1)')}
           >
             <BootIcon />
             <div>
