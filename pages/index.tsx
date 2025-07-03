@@ -202,40 +202,46 @@ export default function Home() {
         <p style={{ textAlign: 'center', color: '#c0392b', fontWeight: 'bold', fontSize: 18 }}>{message}</p>
       )}
 
-      <section
-        style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fill,minmax(280px,1fr))',
-          gap: 24,
-        }}
-      >
-        {departures.map((dep) => (
-          <article
-            key={dep.code}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              backgroundColor: 'white',
-              padding: 16,
-              borderRadius: 12,
-              boxShadow: '0 4px 8px rgba(0,0,0,0.1)',
-              transition: 'transform 0.2s',
-              cursor: 'default',
-            }}
-            onMouseEnter={(e) => (e.currentTarget.style.transform = 'scale(1.03)')}
-            onMouseLeave={(e) => (e.currentTarget.style.transform = 'scale(1)')}
-          >
-            <BootIcon />
-            <div>
-              <h2 style={{ margin: '0 0 8px 0', fontSize: 18, color: '#2c3e50' }}>{dep.vesselName}</h2>
-              <p style={{ margin: 0, color: '#7f8c8d', fontWeight: '600' }}>
-                Vertrek: <span style={{ color: '#34495e' }}>{dep.departureTime}</span> &nbsp;&nbsp;
-                Aankomst: <span style={{ color: '#34495e' }}>{dep.arrivalTime}</span>
-              </p>
-            </div>
-          </article>
-        ))}
-      </section>
+<section
+  style={{
+    display: 'flex',
+    flexDirection: 'column',
+    gap: 20,
+    maxWidth: 800,
+    margin: '0 auto',
+  }}
+>
+  {departures.map((dep) => (
+    <article
+      key={dep.code}
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+        backgroundColor: 'white',
+        padding: 16,
+        borderRadius: 12,
+        boxShadow: '0 4px 12px rgba(0,0,0,0.08)',
+        transition: 'transform 0.2s',
+        cursor: 'default',
+        flexWrap: 'wrap',
+      }}
+      onMouseEnter={(e) => (e.currentTarget.style.transform = 'scale(1.02)')}
+      onMouseLeave={(e) => (e.currentTarget.style.transform = 'scale(1)')}
+    >
+      <div style={{ flexShrink: 0 }}>
+        <BootIcon />
+      </div>
+      <div style={{ flex: 1, minWidth: 200 }}>
+        <h2 style={{ margin: '0 0 8px 0', fontSize: 20, color: '#2c3e50' }}>{dep.vesselName}</h2>
+        <p style={{ margin: 0, color: '#7f8c8d', fontWeight: '600', fontSize: 16 }}>
+          Vertrek: <span style={{ color: '#34495e' }}>{dep.departureTime}</span> &nbsp;&nbsp;
+          Aankomst: <span style={{ color: '#34495e' }}>{dep.arrivalTime}</span>
+        </p>
+      </div>
+    </article>
+  ))}
+</section>
+
     </main>
   );
 }
