@@ -1,55 +1,96 @@
-// pages/index.tsx
-
-import { useEffect, useState } from 'react';
-
-type Departure = {
-  code: string;
-  vesselName: string;
-  vessel: string;
-  departureTime: string;
-  arrivalTime: string;
-  duration: number;
-  status: string;
-};
+import { useState, useEffect } from 'react';
 
 export default function Home() {
-  const [departures, setDepartures] = useState<Departure[]>([]);
-  const [loading, setLoading] = useState(true);
+const dagen = ['zondag', 'maandag', 'dinsdag', 'woensdag', 'donderdag', 'vrijdag', 'zaterdag'];
+const dagNaam = (date: Date) => dagen[date.getDay()];
+
+const isSameOrAfter = (d1: Date, d2: Date) => {
+  const date1 = new Date(d1.getFullYear(), d1.getMonth(), d1.getDate());
+  const date2 = new Date(d2.getFullYear(), d2.getMonth(), d2.getDate());
+  return date1 >= date2;
+};
+
+
+
+
+  const today = new Date();
+  const [date, setDate] = useState(today);
+  const [departures, setDepartures] = useState([]);
+  const [message, setMessage] = useState('');
+
+  const fetchDepartures = async (date: Date) => {
+    const isoDate = date.toISOString().split('T')[0];
+    const res = await fetch(`/api/departures?date=${isoDate}`);
+    const json = await res.json();
+
+    if (json.message) {
+      setMessage(json.message);
+      setDepartures([]);
+    } else {
+      setMessage('');
+      setDepartures(json.departures);
+    }
+  };
 
   useEffect(() => {
-    fetch('/api/departures')
-      .then((res) => res.json())
-      .then((data) => {
-        setDepartures(data);
-        setLoading(false);
-      });
-  }, []);
+    fetchDepartures(date);
+  }, [date]);
+
+  // Knop om terug te gaan, mag niet voor vandaag
+    const prevDay = () => {
+      const prev = new Date(date);
+      prev.setDate(prev.getDate() - 1);
+      if (isSameOrAfter(prev, today)) {
+        setDate(prev);
+      }
+    };
+
+  // Knop om een dag vooruit
+  const nextDay = () => {
+    const next = new Date(date);
+    next.setDate(next.getDate() + 1);
+    setDate(next);
+  };
+
+  // Handlers voor input type=date
+  const onChangeDate = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const selected = new Date(e.target.value);
+    if (selected >= today) {
+      setDate(selected);
+    }
+  };
 
   return (
-    <main style={{ fontFamily: 'sans-serif', padding: '2rem' }}>
-      <h1>⛴️ Harlingen → Terschelling</h1>
-      {loading ? (
-        <p>Ophalen van afvaarten...</p>
-      ) : (
-        <ul style={{ listStyle: 'none', padding: 0 }}>
-          {departures.map((dep) => (
-            <li
-              key={dep.code}
-              style={{
-                border: '1px solid #ccc',
-                padding: '1rem',
-                marginBottom: '1rem',
-                borderRadius: '8px',
-              }}
-            >
-              <strong>{dep.vesselName}</strong> ({dep.vessel})<br />
-              🕗 <strong>{dep.departureTime}</strong> → {dep.arrivalTime}<br />
-              ⏱️ Duur: {dep.duration} min<br />
-              📶 Status: {dep.status}
-            </li>
-          ))}
-        </ul>
-      )}
+    <main style={{ padding: 20 }}>
+      <h1>Rederijk Doeksen dienstregeling</h1>
+      <div style={{ marginBottom: 20 }}>
+        <button onClick={prevDay} disabled={date <= today}>
+          &lt; Vorige dag
+        </button>
+        <input
+          type="date"
+          value={date.toISOString().split('T')[0]}
+          onChange={onChangeDate}
+          min={today.toISOString().split('T')[0]}
+          style={{ margin: '0 10px' }}
+        />
+        <button onClick={nextDay}>Volgende dag &gt;</button>
+      </div>
+
+      <p>
+        Datum: {dagNaam(date)} ({date.toISOString().split('T')[0]})
+      </p>
+
+      {message && <p>{message}</p>}
+
+
+      <ul>
+        {departures.map((dep: any) => (
+          <li key={dep.code}>
+            <strong>{dep.vesselName}</strong> - Vertrek: {dep.departureTime} - Aankomst: {dep.arrivalTime}
+          </li>
+        ))}
+      </ul>
     </main>
   );
 }
