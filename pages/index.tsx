@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 
-export default function Home() {
 const dagen = ['zondag', 'maandag', 'dinsdag', 'woensdag', 'donderdag', 'vrijdag', 'zaterdag'];
 const dagNaam = (date: Date) => dagen[date.getDay()];
 
@@ -10,12 +9,33 @@ const isSameOrAfter = (d1: Date, d2: Date) => {
   return date1 >= date2;
 };
 
+// Simple boot SVG icon als React component
+const BootIcon = () => (
+  <svg
+    width="40"
+    height="40"
+    viewBox="0 0 64 64"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+    style={{ marginRight: 12 }}
+  >
+    <path
+      d="M2 44h60l-10-20H12l-10 20z"
+      fill="#4A90E2"
+      stroke="#1C3D6D"
+      strokeWidth="2"
+      strokeLinejoin="round"
+    />
+    <rect x="20" y="24" width="24" height="10" fill="#90CAF9" />
+    <path d="M32 12v12" stroke="#1C3D6D" strokeWidth="2" />
+    <path d="M26 24h12" stroke="#1C3D6D" strokeWidth="2" />
+  </svg>
+);
 
-
-
+export default function Home() {
   const today = new Date();
   const [date, setDate] = useState(today);
-  const [departures, setDepartures] = useState([]);
+  const [departures, setDepartures] = useState<any[]>([]);
   const [message, setMessage] = useState('');
 
   const fetchDepartures = async (date: Date) => {
@@ -36,61 +56,116 @@ const isSameOrAfter = (d1: Date, d2: Date) => {
     fetchDepartures(date);
   }, [date]);
 
-  // Knop om terug te gaan, mag niet voor vandaag
-    const prevDay = () => {
-      const prev = new Date(date);
-      prev.setDate(prev.getDate() - 1);
-      if (isSameOrAfter(prev, today)) {
-        setDate(prev);
-      }
-    };
+  const prevDay = () => {
+    const prev = new Date(date);
+    prev.setDate(prev.getDate() - 1);
+    if (isSameOrAfter(prev, today)) {
+      setDate(prev);
+    }
+  };
 
-  // Knop om een dag vooruit
   const nextDay = () => {
     const next = new Date(date);
     next.setDate(next.getDate() + 1);
     setDate(next);
   };
 
-  // Handlers voor input type=date
   const onChangeDate = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selected = new Date(e.target.value);
-    if (selected >= today) {
+    if (isSameOrAfter(selected, today)) {
       setDate(selected);
     }
   };
 
   return (
-    <main style={{ padding: 20 }}>
-      <h1>Rederijk Doeksen dienstregeling</h1>
-      <div style={{ marginBottom: 20 }}>
-        <button onClick={prevDay} disabled={date <= today}>
+    <main style={{ padding: 24, fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif", backgroundColor: '#f4f7fa', minHeight: '100vh' }}>
+      <h1 style={{ textAlign: 'center', color: '#333', marginBottom: 24 }}>Rederijk Doeksen dienstregeling</h1>
+
+      <section style={{ display: 'flex', justifyContent: 'center', gap: 12, marginBottom: 24, flexWrap: 'wrap' }}>
+        <button
+          onClick={prevDay}
+          disabled={!isSameOrAfter(new Date(date.getFullYear(), date.getMonth(), date.getDate() - 1), today)}
+          style={{
+            padding: '10px 16px',
+            fontSize: 16,
+            backgroundColor: '#4A90E2',
+            color: 'white',
+            border: 'none',
+            borderRadius: 6,
+            cursor: 'pointer',
+            opacity: !isSameOrAfter(new Date(date.getFullYear(), date.getMonth(), date.getDate() - 1), today) ? 0.4 : 1,
+          }}
+        >
           &lt; Vorige dag
         </button>
+
         <input
           type="date"
           value={date.toISOString().split('T')[0]}
           onChange={onChangeDate}
           min={today.toISOString().split('T')[0]}
-          style={{ margin: '0 10px' }}
+          style={{
+            padding: '10px 12px',
+            fontSize: 16,
+            borderRadius: 6,
+            border: '1px solid #ccc',
+            boxShadow: 'inset 0 1px 3px rgba(0,0,0,0.1)',
+            textAlign: 'center',
+          }}
         />
-        <button onClick={nextDay}>Volgende dag &gt;</button>
-      </div>
 
-      <p>
-        Datum: {dagNaam(date)} ({date.toISOString().split('T')[0]})
+        <button
+          onClick={nextDay}
+          style={{
+            padding: '10px 16px',
+            fontSize: 16,
+            backgroundColor: '#4A90E2',
+            color: 'white',
+            border: 'none',
+            borderRadius: 6,
+            cursor: 'pointer',
+          }}
+        >
+          Volgende dag &gt;
+        </button>
+      </section>
+
+      <p style={{ textAlign: 'center', marginBottom: 32, fontSize: 18, color: '#555' }}>
+        <strong>{dagNaam(date)}</strong> — {date.toLocaleDateString('nl-NL', { year: 'numeric', month: 'long', day: 'numeric' })}
       </p>
 
-      {message && <p>{message}</p>}
+      {message && (
+        <p style={{ textAlign: 'center', color: '#c0392b', fontWeight: 'bold', fontSize: 18 }}>{message}</p>
+      )}
 
-
-      <ul>
-        {departures.map((dep: any) => (
-          <li key={dep.code}>
-            <strong>{dep.vesselName}</strong> - Vertrek: {dep.departureTime} - Aankomst: {dep.arrivalTime}
-          </li>
+      <section style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(280px,1fr))', gap: 24 }}>
+        {departures.map((dep) => (
+          <article
+            key={dep.code}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              backgroundColor: 'white',
+              padding: 16,
+              borderRadius: 12,
+              boxShadow: '0 4px 8px rgba(0,0,0,0.1)',
+              transition: 'transform 0.2s',
+              cursor: 'default',
+            }}
+            onMouseEnter={e => (e.currentTarget.style.transform = 'scale(1.03)')}
+            onMouseLeave={e => (e.currentTarget.style.transform = 'scale(1)')}
+          >
+            <BootIcon />
+            <div>
+              <h2 style={{ margin: '0 0 8px 0', fontSize: 18, color: '#2c3e50' }}>{dep.vesselName}</h2>
+              <p style={{ margin: 0, color: '#7f8c8d', fontWeight: '600' }}>
+                Vertrek: <span style={{ color: '#34495e' }}>{dep.departureTime}</span> &nbsp;&nbsp;
+                Aankomst: <span style={{ color: '#34495e' }}>{dep.arrivalTime}</span>
+              </p>
+            </div>
+          </article>
         ))}
-      </ul>
+      </section>
     </main>
   );
 }
