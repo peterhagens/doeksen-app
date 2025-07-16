@@ -245,6 +245,20 @@ export default function Home() {
           </article>
         ))}
       </section>
+      <footer
+        style={{
+          marginTop: 48,
+          padding: '24px 0',
+          textAlign: 'center',
+          color: '#888',
+          fontSize: 14,
+          background: 'none',
+        }}
+      >
+        <p>
+          <strong>Disclaimer:</strong> Dit is een privé, niet-commercieel project. Het enige doel is om sneller en eenvoudiger de veertijden en beschikbaarheid van Rederij Doeksen te kunnen raadplegen. Deze site is niet verbonden aan of goedgekeurd door Rederij Doeksen.
+        </p>
+      </footer>
 
     </main>
   );
