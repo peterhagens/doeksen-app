@@ -1,4 +1,5 @@
-// If you're using Node.js < 18, install: npm install node-fetch
+// Calls the API from H to T for today and outputs result to console
+// tsx scripts/testDepartures.ts
 import fetch from 'node-fetch';
 
 function getTodayISODate(): string {
