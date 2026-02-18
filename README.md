@@ -1,3 +1,17 @@
+# Doeksen Vertrektijden
+
+To start:
+```bash
+npm run dev
+```
+
+Testing:
+```bash
+npx tsx scripts/testDepartures.ts
+```
+
+-- Original README.md
+
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/pages/api-reference/create-next-app).
 
 ## Getting Started
