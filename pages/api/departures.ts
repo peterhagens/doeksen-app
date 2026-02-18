@@ -67,6 +67,7 @@ export default async function handler(
                 hour: '2-digit',
                 minute: '2-digit',
                 hour12: false,
+                timeZone: 'Europe/Amsterdam',
               });
             }
           }
@@ -78,6 +79,7 @@ export default async function handler(
                 hour: '2-digit',
                 minute: '2-digit',
                 hour12: false,
+                timeZone: 'Europe/Amsterdam',
               });
             }
           }
