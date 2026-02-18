@@ -9,26 +9,44 @@ const isSameOrAfter = (d1: Date, d2: Date) => {
   return date1 >= date2;
 };
 
-// Boot icon zoals eerder
+// Boot icon (optimized from custom design)
 const BootIcon = () => (
   <svg
     width="40"
     height="40"
-    viewBox="0 0 64 64"
+    viewBox="0 0 100 50"
     fill="none"
     xmlns="http://www.w3.org/2000/svg"
     style={{ marginRight: 12 }}
   >
+    {/* Hull */}
+    <path d="M8 27 L80 27 L92 23 L96 20 L96 30 L12 32 Z" fill="#1C3D6D" />
+
+    {/* Upper body */}
+    <path d="M18 20 L72 20 L80 24 L88 24 L80 28 L18 28 Z" fill="#4A90E2" />
+
+    {/* Bridge */}
+    <polygon points="72,17 88,17 92,24 80,24" fill="#1C3D6D" />
+
+    {/* Windows strip */}
+    <rect x="22" y="22" width="48" height="3" fill="#90CAF9" rx="1" />
+
+    {/* Upper deck */}
+    <rect x="32" y="14" width="32" height="4" fill="#4A90E2" rx="1" />
+
+    {/* Funnel */}
+    <rect x="44" y="8" width="6" height="6" fill="#1C3D6D" rx="1" />
+
+    {/* Mast */}
+    <line x1="47" y1="8" x2="47" y2="2" stroke="#1C3D6D" strokeWidth="1" />
+
+    {/* Wave accent */}
     <path
-      d="M2 44h60l-10-20H12l-10 20z"
-      fill="#4A90E2"
-      stroke="#1C3D6D"
-      strokeWidth="2"
-      strokeLinejoin="round"
+      d="M15 35 Q25 32 35 35 T55 35 T75 35 T95 35"
+      stroke="#90CAF9"
+      strokeWidth="1"
+      fill="none"
     />
-    <rect x="20" y="24" width="24" height="10" fill="#90CAF9" />
-    <path d="M32 12v12" stroke="#1C3D6D" strokeWidth="2" />
-    <path d="M26 24h12" stroke="#1C3D6D" strokeWidth="2" />
   </svg>
 );
 
@@ -234,8 +252,8 @@ export default function Home() {
             <div style={{ flex: 1, minWidth: 200 }}>
               <h2 style={{ margin: '0 0 8px 0', fontSize: 20, color: '#2c3e50' }}>{dep.vesselName}</h2>
               <p style={{ margin: 0, color: '#7f8c8d', fontWeight: '600', fontSize: 16 }}>
-                Vertrek: <span style={{ color: '#34495e' }}>{dep.departureTime}</span> &nbsp;&nbsp;
-                Aankomst: <span style={{ color: '#34495e' }}>{dep.arrivalTime}</span>
+                Vertrek: <span style={{ color: '#34495e' }}>{dep.departureLocalTime ?? dep.departureTime}</span> &nbsp;&nbsp;
+                Aankomst: <span style={{ color: '#34495e' }}>{dep.arrivalLocalTime ?? dep.arrivalTime}</span>
               </p>
               <p style={{ margin: '8px 0 0 0', color: '#34495e', fontSize: 15 }}>
                 Passagiers: <strong>{dep.passengers ?? 'n.v.t.'}</strong> &nbsp;&nbsp;

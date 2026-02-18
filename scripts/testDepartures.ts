@@ -17,7 +17,7 @@ async function testDeparturesAPI(from = 'H', to = 'T') {
     const response = await fetch(url);
     const result = await response.json();
 
-    console.log('✅ Response:', JSON.stringify(result, null, 2));
+  console.log('✅ Response:', JSON.stringify(result, null, 2));
   } catch (error) {
     console.error('❌ Failed to fetch:', error);
   }
