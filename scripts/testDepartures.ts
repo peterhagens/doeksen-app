@@ -17,50 +17,7 @@ async function testDeparturesAPI(from = 'H', to = 'T') {
     const response = await fetch(url);
     const result = await response.json();
 
-    // If departures exist, add departureLocalTime and arrivalLocalTime fields parsed from ISO datetimes
-    let output = result;
-    if (result && Array.isArray(result.departures)) {
-      output = {
-        ...result,
-        departures: result.departures.map((d: any) => {
-          const depDt = d.departureDateTime;
-          const arrDt = d.arrivalDateTime;
-
-          let departureLocalTime: string | null = null;
-          let arrivalLocalTime: string | null = null;
-
-          if (depDt) {
-            const dateObj = new Date(depDt);
-            if (!Number.isNaN(dateObj.getTime())) {
-              departureLocalTime = dateObj.toLocaleTimeString('nl-NL', {
-                hour: '2-digit',
-                minute: '2-digit',
-                hour12: false,
-              });
-            }
-          }
-
-          if (arrDt) {
-            const dateObj = new Date(arrDt);
-            if (!Number.isNaN(dateObj.getTime())) {
-              arrivalLocalTime = dateObj.toLocaleTimeString('nl-NL', {
-                hour: '2-digit',
-                minute: '2-digit',
-                hour12: false,
-              });
-            }
-          }
-
-          return {
-            ...d,
-            departureLocalTime: departureLocalTime ?? d.departureTime,
-            arrivalLocalTime: arrivalLocalTime ?? d.arrivalTime,
-          };
-        }),
-      };
-    }
-
-    console.log('✅ Response:', JSON.stringify(output, null, 2));
+  console.log('✅ Response:', JSON.stringify(result, null, 2));
   } catch (error) {
     console.error('❌ Failed to fetch:', error);
   }

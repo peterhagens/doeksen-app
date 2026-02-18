@@ -47,9 +47,51 @@ export default async function handler(
     });
     const availabilityData = await availabilityResponse.json();
 
-    const combinedResponse = mergeDeparturesWithStats(data, availabilityData);
+    let combinedResponse = mergeDeparturesWithStats(data, availabilityData);
 
-    res.status(200).json( combinedResponse );
+    // Add local time strings (HH:mm) for departure and arrival, parsed from ISO datetimes
+    if (combinedResponse && Array.isArray(combinedResponse.departures)) {
+      combinedResponse = {
+        ...combinedResponse,
+        departures: combinedResponse.departures.map((d: any) => {
+          const depDt = d.departureDateTime;
+          const arrDt = d.arrivalDateTime;
+
+          let departureLocalTime: string | null = null;
+          let arrivalLocalTime: string | null = null;
+
+          if (depDt) {
+            const dateObj = new Date(depDt);
+            if (!Number.isNaN(dateObj.getTime())) {
+              departureLocalTime = dateObj.toLocaleTimeString('nl-NL', {
+                hour: '2-digit',
+                minute: '2-digit',
+                hour12: false,
+              });
+            }
+          }
+
+          if (arrDt) {
+            const dateObj = new Date(arrDt);
+            if (!Number.isNaN(dateObj.getTime())) {
+              arrivalLocalTime = dateObj.toLocaleTimeString('nl-NL', {
+                hour: '2-digit',
+                minute: '2-digit',
+                hour12: false,
+              });
+            }
+          }
+
+          return {
+            ...d,
+            departureLocalTime: departureLocalTime ?? d.departureTime,
+            arrivalLocalTime: arrivalLocalTime ?? d.arrivalTime,
+          };
+        }),
+      };
+    }
+
+    res.status(200).json(combinedResponse);
   } catch (err) {
     res.status(500).json({ error: "Fout bij ophalen van afvaarten" });
   }
