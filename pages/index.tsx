@@ -234,8 +234,8 @@ export default function Home() {
             <div style={{ flex: 1, minWidth: 200 }}>
               <h2 style={{ margin: '0 0 8px 0', fontSize: 20, color: '#2c3e50' }}>{dep.vesselName}</h2>
               <p style={{ margin: 0, color: '#7f8c8d', fontWeight: '600', fontSize: 16 }}>
-                Vertrek: <span style={{ color: '#34495e' }}>{dep.departureTime}</span> &nbsp;&nbsp;
-                Aankomst: <span style={{ color: '#34495e' }}>{dep.arrivalTime}</span>
+                Vertrek: <span style={{ color: '#34495e' }}>{dep.departureLocalTime ?? dep.departureTime}</span> &nbsp;&nbsp;
+                Aankomst: <span style={{ color: '#34495e' }}>{dep.arrivalLocalTime ?? dep.arrivalTime}</span>
               </p>
               <p style={{ margin: '8px 0 0 0', color: '#34495e', fontSize: 15 }}>
                 Passagiers: <strong>{dep.passengers ?? 'n.v.t.'}</strong> &nbsp;&nbsp;
