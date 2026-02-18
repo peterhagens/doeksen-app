@@ -17,7 +17,31 @@ async function testDeparturesAPI(from = 'H', to = 'T') {
     const response = await fetch(url);
     const result = await response.json();
 
-    console.log('✅ Response:', JSON.stringify(result, null, 2));
+    // If departures exist, add a departureLocalTime field parsed from departureDateTime
+    let output = result;
+    if (result && Array.isArray(result.departures)) {
+      output = {
+        ...result,
+        departures: result.departures.map((d: any) => {
+          const dt = d.departureDateTime;
+          let departureLocalTime = null;
+          if (dt) {
+            const dateObj = new Date(dt);
+            if (!Number.isNaN(dateObj.getTime())) {
+              departureLocalTime = dateObj.toLocaleTimeString('nl-NL', {
+                hour: '2-digit',
+                minute: '2-digit',
+                hour12: false,
+              });
+            }
+          }
+
+          return { ...d, departureLocalTime: departureLocalTime ?? d.departureTime };
+        }),
+      };
+    }
+
+    console.log('✅ Response:', JSON.stringify(output, null, 2));
   } catch (error) {
     console.error('❌ Failed to fetch:', error);
   }
